@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: evolution_db
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=senha_segura_db
+      - POSTGRES_DB=evolution
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: evolution_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis_data:/data
+    restart: always
+
+  evolution-api:
+    build: ./evolution-api-src
+    container_name: evolution_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - SERVER_URL=http://localhost:8080
+      # Autenticação da sua API
+      - AUTHENTICATION_TYPE=apikey
+      - AUTHENTICATION_API_KEY=senha_super_segura_api
+      # Conexão com o Banco de Dados
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://admin:senha_segura_db@postgres:5432/evolution?schema=public
+      # Conexão com o Redis
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://redis:6379
+      - CACHE_REDIS_PREFIX_KEY=evolution
+    volumes:
+      - ./evolution_instances:/evolution/instances
+    restart: always
+
+  meu_bot:
+    build: ./botzada
+    container_name: botzada_app
+    depends_on:
+      - evolution-api
+    ports:
+      - "3000:3000" # Expondo a porta só para você ver os logs e testar, se quiser
+    environment:
+      # O bot vai conversar internamente com a Evolution:
+      - EVOLUTION_API_URL=http://evolution-api:8080
+      - EVOLUTION_API_KEY=senha_super_segura_api
+      - INSTANCE_NAME=botzada
+      - PORT=3000
+    restart: always

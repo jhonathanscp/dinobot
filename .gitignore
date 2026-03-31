@@ -1,0 +1,6 @@
+.env
+node_modules
+/evolution-api-src
+/evolution_instances
+/postgres_data
+/redis_data
