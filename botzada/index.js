@@ -20,21 +20,21 @@ const api = axios.create({
 });
 
 app.post('/webhook', async (req, res) => {
+  // 1. Libera a Evolution API imediatamente para não travar a fila
+  res.send('EVENT_RECEIVED');
+
   const payload = req.body;
   
   if (payload.event === 'messages.upsert') {
     const data = payload.data;
-    if (!data) return res.send('OK');
+    if (!data) return;
 
     const messageType = data.messageType;
     const remoteJid = data.key.remoteJid;
     const fromMe = data.key.fromMe;
     
-    // Ignora mensagens enviadas pelo proprio bot
-    if (fromMe) return res.send('OK');
-
-    // Ignora mensagens de status
-    if (remoteJid === 'status@broadcast') return res.send('OK');
+    // Ignora mensagens enviadas pelo proprio bot e mensagens de status
+    if (fromMe || remoteJid === 'status@broadcast') return;
 
     let textStr = '';
     if (messageType === 'conversation') {
@@ -45,18 +45,15 @@ app.post('/webhook', async (req, res) => {
       textStr = data.message?.imageMessage?.caption || '';
     }
     
-    // Verifica prefixo '!'
-    if (!textStr || !textStr.startsWith('!')) return res.send('OK');
+    // Se não tem texto ou não começa com '!', encerra aqui
+    if (!textStr || !textStr.startsWith('!')) return;
 
     const [command, ...args] = textStr.trim().split(' ');
-
     console.log(`Comando recebido: ${command} de ${remoteJid}`);
 
+    // --- COMANDO !HELP ---
     if (command === '!help') {
-      const helpText = `*🤖 BotzadaGames - Menu 🤖*\n\n` +
-        `*!help* - Mostra todos os comandos do bot.\n` +
-        `*!fig* - Envie uma imagem com este comando (ou responda a uma imagem com ele) para criar uma figurinha.`;
-        
+      const helpText = `*🤖 BotzadaGames - Menu 🤖*\n\n*!help* - Mostra todos os comandos do bot.\n*!fig* - Envie uma imagem com este comando (ou responda a uma imagem) para criar figurinha.`;
       try {
         await api.post(`/message/sendText/${instanceName}`, {
           number: remoteJid,
@@ -64,60 +61,62 @@ app.post('/webhook', async (req, res) => {
           delay: 1000
         });
       } catch (err) {
-        console.error("Erro ao enviar help:", err?.response?.data || err?.message);
+        console.error("❌ Erro ao enviar help:", err?.message);
       }
     }
 
+    // --- COMANDO !FIG ---
     if (command === '!fig') {
       try {
-        let targetMessageObj = null;
+        let messageToDownload = null;
 
-        // Se a imagem veio com legenda da mensagem
         if (messageType === 'imageMessage') {
-          targetMessageObj = data.message;
-        } 
-        // Se a pessoa respondeu a outra mensagem com o comando
-        else if (messageType === 'extendedTextMessage') {
+          // Se a imagem veio direto, mandamos o objeto data inteiro
+          messageToDownload = data;
+        } else if (messageType === 'extendedTextMessage') {
           const contextInfo = data.message?.extendedTextMessage?.contextInfo;
           if (contextInfo?.quotedMessage?.imageMessage) {
-            targetMessageObj = contextInfo.quotedMessage;
+            // Se respondeu a uma imagem, montamos a estrutura exata que a API exige
+            messageToDownload = {
+              key: {
+                remoteJid: remoteJid,
+                id: contextInfo.stanzaId, // Pega o ID da mensagem original que tem a foto
+                participant: contextInfo.participant
+              },
+              message: contextInfo.quotedMessage
+            };
           }
         }
 
-        if (targetMessageObj) {
+        if (messageToDownload) {
           // Solicita o base64
           const base64Res = await api.post(`/chat/getBase64FromMediaMessage/${instanceName}`, {
-            message: targetMessageObj
+            message: messageToDownload
           });
           
           if (base64Res.data && base64Res.data.base64) {
-            const base64Str = base64Res.data.base64;
-            
-            // Envia a figurinha usando o base64
+            // Envia a figurinha
             await api.post(`/message/sendSticker/${instanceName}`, {
               number: remoteJid,
-              sticker: base64Str,
+              sticker: base64Res.data.base64,
               delay: 800
             });
-            console.log(`Figurinha enviada para ${remoteJid}`);
+            console.log(`✅ Figurinha enviada com sucesso para ${remoteJid}`);
           }
         } else {
            await api.post(`/message/sendText/${instanceName}`, {
               number: remoteJid,
-              text: "⚠️ AVISO: Comando incorreto. Você deve enviar o comando *!fig* na legenda de uma imagem ou responder a uma imagem existente com *!fig*.",
+              text: "⚠️ AVISO: Você deve enviar o comando *!fig* na legenda de uma imagem ou responder a uma imagem existente com o comando.",
               delay: 500
            });
         }
       } catch (err) {
-        console.error("Erro ao gerar figurinha:", err?.response?.data || err.message);
+        console.error("❌ Erro ao gerar figurinha:", err?.response?.data || err.message);
       }
     }
   }
-
-  res.send('EVENT_RECEIVED');
 });
 
 app.listen(port, () => {
   console.log(`🤖 BotzadaGames em execução na porta ${port}`);
-  console.log(`👉 Webhook URL configurável: http://localhost:${port}/webhook`);
 });
