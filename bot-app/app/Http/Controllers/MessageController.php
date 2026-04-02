@@ -9,7 +9,7 @@ class MessageController extends Controller
 {
     public function __construct(private MessageService $MessageService) {}
 
-    public function dispatch(Request $request)
+    public function handleWebhook(Request $request)
     {
         if ($request->input('event') !== 'messages.upsert') {
             response()->json(['status' => 'ignored', 200]);

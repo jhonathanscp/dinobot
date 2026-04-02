@@ -12,7 +12,7 @@ services:
 
   redis:
     image: redis:7.2-alpine
-    container_name: evolution_redis
+    container_name: evolution-redis
     command: redis-server --appendonly yes
     volumes:
       - ./redis_data:/data
@@ -20,7 +20,7 @@ services:
 
   evolution-api:
     build: ./evolution-api-src
-    container_name: evolution_api
+    container_name: evolution-api
     ports:
       - "8080:8080"
     depends_on:
@@ -36,9 +36,11 @@ services:
     build: ./bot-app
     container_name: bot-app
     depends_on:
-      - evolution_api
+      - evolution-api
     ports:
       - "3000:8080"
     env_file:
       - .env
     restart: always
+    volumes:
+      - ./bot-app:/var/www/html

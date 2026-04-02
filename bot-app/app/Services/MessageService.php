@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+
 class MessageService
 {
     /**
@@ -12,8 +14,8 @@ class MessageService
         //
     }
 
-    public function processMessage()
+    public function processMessage($request)
     {
-        //
+        Log::info('Recebi uma mensagem!', $request);
     }
 }
