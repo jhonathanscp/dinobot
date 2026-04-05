@@ -12,7 +12,16 @@ class MessageController extends Controller
     public function handleWebhook(Request $request)
     {
         if ($request->input('event') !== 'messages.upsert') {
-            response()->json(['status' => 'ignored', 200]);
+            return response()->json(['status' => 'ignored'], 200);
+        }
+
+        $messageText = $request->input('data.message.conversation')
+            ?? $request->input('data.message.extendedTextMessage.text')
+            ?? $request->input('data.message.imageMessage.caption')
+            ?? '';
+
+        if (!str_starts_with($messageText, config('app.prefix'))) {
+            return response()->json(['status' => 'ignored'], 200);
         }
 
         $remoteJid = $request->input('data.key.remoteJid');
@@ -24,6 +33,6 @@ class MessageController extends Controller
 
         $this->MessageService->processMessage($request->all());
 
-        response()->json(['status' => 'EVENT_RECEIVED', 200]);
+        return response()->json(['status' => 'EVENT_RECEIVED'], 200);
     }
 }
