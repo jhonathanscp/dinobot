@@ -61,10 +61,7 @@ class EvolutionProvider implements WhatsAppProviderInterface
             ])->post("{$this->apiUrl}/message/sendSticker/{$this->instanceName}", [
                 'number'  => $to,
                 'sticker' => $imgBase64,
-                'metadata' => [
-                    'pack'   => 'Botzada',
-                    'author' => 'Jhonathan'
-                ]
+                'delay'       => 1200
 
             ]);
 
