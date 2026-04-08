@@ -71,6 +71,8 @@ class EvolutionProvider implements WhatsAppProviderInterface
             if ($response->failed()) {
                 Log::error('Erro no ao enviar figurinha: ', $response->json() ?? []);
 
+                $this->sendText($to, "Dino ainda não consegue converter esse tipo de mídia 😥");
+
                 return false;
             }
 

@@ -18,8 +18,7 @@ class HelpService
 
         $this->helpMessage = "🦖 *DinoBot - Menu de Comandos*\n\n"
             . "*{$this->prefix}help*: Exibe esta lista de comandos.\n\n"
-            . "*{$this->prefix}fig*: Transforma imagem/vídeo em figurinha. (Envie com a mídia ou responda a uma).\n\n"
-            . "*{$this->prefix}transcribe*: Converte áudio em texto. (Responda a um áudio com este comando).";
+            . "*{$this->prefix}fig*: Transforma imagem/vídeo em figurinha. (Envie com a mídia ou responda a uma).";
 
         $this->notFoundMessage = "❌ *Ops! Esse comando não existe.*\n\n"
             . "Para consultar a lista de comandos, digite *{$this->prefix}help* e veja o que eu posso fazer por você! 🦖";

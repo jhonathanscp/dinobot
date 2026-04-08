@@ -123,7 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'prefix' => '.',
+    'prefix' => env('BOT_PREFIX', '!'),
 
     'evolution_api_url' => env('EVOLUTION_API_URL'),
     'instance_name' => env('INSTANCE_NAME'),

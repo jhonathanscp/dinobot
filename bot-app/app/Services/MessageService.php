@@ -27,6 +27,7 @@ class MessageService
         $messageText = data_get($messageData, 'data.message.conversation')
             ?? data_get($messageData, 'data.message.extendedTextMessage.text')
             ?? data_get($messageData, 'data.message.imageMessage.caption')
+            ?? data_get($messageData, 'data.message.videoMessage.caption')
             ?? '';
 
         $messageAfterSplit = preg_split("/(" . preg_quote($prefix) . ")/", $messageText, 2, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
