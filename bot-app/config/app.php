@@ -124,6 +124,8 @@ return [
     ],
 
     'prefix' => env('BOT_PREFIX', '!'),
+    'game_prefix' => env('BOT_GAME_PREFIX', '$'),
+    'game_allowed_group_jid' => env('GAME_ALLOWED_GROUP_JID', 'INSERIR REMOTEJID DEPOIS'),
 
     'evolution_api_url' => env('EVOLUTION_API_URL'),
     'instance_name' => env('INSTANCE_NAME'),

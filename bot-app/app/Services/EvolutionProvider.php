@@ -81,6 +81,36 @@ class EvolutionProvider implements WhatsAppProviderInterface
         }
     }
 
+    public function sendImage($to, $imageUrl, $caption): bool
+    {
+        Log::info("Enviando imagem via Evolution:", [
+            'url' => $this->apiUrl,
+            'to' => $to,
+        ]);
+
+        try {
+            $response = Http::withHeaders([
+                'apikey' => $this->apiKey
+            ])->post("{$this->apiUrl}/message/sendMedia/{$this->instanceName}", [
+                'number' => $to,
+                'mediatype' => 'image',
+                'media' => $imageUrl,
+                'caption' => $caption,
+                'delay' => 1200,
+            ]);
+
+            if ($response->failed()) {
+                Log::error('Erro ao enviar imagem via Evolution:', $response->json() ?? []);
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $exception) {
+            Log::error('Erro no evolution provider ao enviar imagem: ' . $exception->getMessage());
+            return false;
+        }
+    }
+
     public function getBase64Media($messageBody): ?string
     {
         Log::info("Solicitando imagem em Base64 à EvolutionAPI:", [

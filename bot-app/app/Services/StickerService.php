@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Interfaces\WhatsappProviderInterface;
+use App\Interfaces\WhatsAppProviderInterface;
 use Illuminate\Support\Facades\Log;
 
 class StickerService
@@ -10,7 +10,7 @@ class StickerService
 
     protected $prefix;
 
-    public function __construct(protected WhatsappProviderInterface $whatsapp)
+    public function __construct(protected WhatsAppProviderInterface $whatsapp)
     {
         $this->prefix = config('app.prefix');
     }

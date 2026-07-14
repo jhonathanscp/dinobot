@@ -28,7 +28,7 @@ class MessageController extends Controller
         $fromMe = $request->input('data.key.fromMe', false);
 
         if (!$remoteJid || $fromMe || $remoteJid === 'status@broadcast') {
-            response()->json(['status' => 'EVENT_RECEIVED', 200]);
+            return response()->json(['status' => 'EVENT_RECEIVED'], 200);
         }
 
         $this->MessageService->processMessage($request->all());
