@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Interfaces\WhatsAppProviderInterface;
-use App\Services\EvolutionProvider;
+use App\Services\WuzapiProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             WhatsAppProviderInterface::class,
-            EvolutionProvider::class
+            WuzapiProvider::class
         );
     }
 

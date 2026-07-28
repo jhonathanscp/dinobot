@@ -27,18 +27,21 @@ class HelpService
 
     public function execute($message, $messageData): bool
     {
-
-        $jid = data_get($messageData, 'data.key.remoteJid');
+        $jid = data_get($messageData, 'data.info.remoteJid');
+        error_log("HELPSERVICE EXECUTE CALLED! JID: $jid");
 
         if (!$jid) {
+            error_log("HelpService: JID não encontrado no payload.");
             Log::error("HelpService: JID não encontrado no payload.");
             return false;
         }
 
         if ($message[1] !== 'help') {
+            error_log("HELPSERVICE: SENDING NOT FOUND MESSAGE");
             return $this->whatsapp->sendText($jid, $this->notFoundMessage);
         }
 
+        error_log("HELPSERVICE: SENDING HELP MESSAGE");
         return $this->whatsapp->sendText($jid, $this->helpMessage);
     }
 }

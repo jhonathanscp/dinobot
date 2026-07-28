@@ -14,7 +14,7 @@ class GachaSpinService
 
     public function execute(array $messageData): bool
     {
-        $remoteJid = data_get($messageData, 'data.key.remoteJid');
+        $remoteJid = data_get($messageData, 'data.info.remoteJid');
 
         if (!$remoteJid) {
             return false;

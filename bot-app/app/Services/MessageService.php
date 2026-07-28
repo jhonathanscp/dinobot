@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\Mime\Message;
 
 class MessageService
 {

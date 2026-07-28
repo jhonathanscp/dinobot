@@ -18,12 +18,13 @@ class StickerService
     public function execute($message, $messageData): bool
     {
         Log::info("Mensagem: ", $message);
-        Log::info("Webhook: ", [data_get($messageData, 'data.contextInfo.stanzaId')]);
+        Log::info("Webhook: ", [data_get($messageData, 'data.message.extendedTextMessage.contextInfo.stanzaId')]);
 
-        $jid = data_get($messageData, 'data.key.remoteJid');
-        $authorName = data_get($messageData, 'data.pushName');
+        $jid = data_get($messageData, 'data.info.remoteJid');
+        $authorName = data_get($messageData, 'data.info.pushName');
 
-        $messageType = data_get($messageData, 'data.messageType');
+        $messageKeys = array_keys(data_get($messageData, 'data.message', []));
+        $messageType = collect($messageKeys)->first(fn ($key) => $key !== 'messageContextInfo');
 
         if ($messageType === 'imageMessage') {
             $base64Img = $this->whatsapp->getBase64Media(data_get($messageData, 'data'));
@@ -31,15 +32,17 @@ class StickerService
             return $this->whatsapp->sendSticker($jid, $authorName, $base64Img);
         }
 
-        if ($messageType === 'conversation') {
-            if (data_get($messageData, 'data.contextInfo.stanzaId') === null) {
+        if ($messageType === 'conversation' || $messageType === 'extendedTextMessage') {
+            $stanzaId = data_get($messageData, 'data.message.extendedTextMessage.contextInfo.stanzaId');
+
+            if ($stanzaId === null) {
                 return $this->whatsapp->sendText($jid, "⁉️ Para criar uma figurinha, você precisa enviar uma imagem com o comando ou responder a uma imagem existente.");
             }
 
+            $quotedMessage = data_get($messageData, 'data.message.extendedTextMessage.contextInfo.quotedMessage', []);
+
             $base64Img = $this->whatsapp->getBase64Media([
-                'key' => [
-                    'id' => data_get($messageData, 'data.contextInfo.stanzaId'),
-                ]
+                'message' => $quotedMessage,
             ]);
 
             return $this->whatsapp->sendSticker($jid, $authorName, $base64Img);

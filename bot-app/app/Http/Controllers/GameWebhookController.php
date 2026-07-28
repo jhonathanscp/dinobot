@@ -9,7 +9,7 @@ class GameWebhookController extends Controller
 {
     public function handleWebhook(Request $request)
     {
-        if ($request->input('event') !== 'messages.upsert') {
+        if ($request->input('type') !== 'Message') {
             return response()->json(['status' => 'ignored'], 200);
         }
 
@@ -23,8 +23,8 @@ class GameWebhookController extends Controller
             return response()->json(['status' => 'ignored'], 200);
         }
 
-        $remoteJid = (string) $request->input('data.key.remoteJid', '');
-        $fromMe = (bool) $request->input('data.key.fromMe', false);
+        $remoteJid = (string) $request->input('data.info.remoteJid', '');
+        $fromMe = (bool) $request->input('data.info.fromMe', false);
         $allowedGroupJid = (string) config('app.game_allowed_group_jid', '');
 
         if (
@@ -40,7 +40,7 @@ class GameWebhookController extends Controller
 
         $jobPayload = [
             'data' => [
-                'key' => [
+                'info' => [
                     'remoteJid' => $remoteJid,
                     'fromMe' => $fromMe,
                 ],

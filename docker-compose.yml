@@ -1,42 +1,22 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:18-alpine
-    container_name: evolution_db
-    env_file:
-      - .env
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-    restart: always
-
-  redis:
-    image: redis:7.2-alpine
-    container_name: evolution-redis
-    command: redis-server --appendonly yes
-    volumes:
-      - ./redis_data:/data
-    restart: always
-
-  evolution-api:
-    build: ./evolution-api-src
-    container_name: evolution-api
+  wuzapi:
+    build: ./wuzapi
+    container_name: wuzapi
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres
-      - redis
     env_file:
       - .env
     volumes:
-      - ./evolution_instances:/evolution/instances
+      - ./wuzapi_data:/app/dbdata
     restart: always
 
   bot-app:
     build: ./bot-app
     container_name: bot-app
     depends_on:
-      - evolution-api
+      - wuzapi
     ports:
       - "3000:8080"
     env_file:
@@ -44,3 +24,16 @@ services:
     restart: always
     volumes:
       - ./bot-app:/var/www/html
+
+  dashboard:
+    build: 
+      context: ./wuzapi-dashboard
+      args:
+        - VITE_WUZAPI_TOKEN=${WUZAPI_TOKEN}
+        - VITE_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD:-admin}
+    container_name: wuzapi-dashboard
+    ports:
+      - "80:80"
+    depends_on:
+      - wuzapi
+    restart: always

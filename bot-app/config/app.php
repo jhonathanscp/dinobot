@@ -127,8 +127,7 @@ return [
     'game_prefix' => env('BOT_GAME_PREFIX', '$'),
     'game_allowed_group_jid' => env('GAME_ALLOWED_GROUP_JID', 'INSERIR REMOTEJID DEPOIS'),
 
-    'evolution_api_url' => env('EVOLUTION_API_URL'),
-    'instance_name' => env('INSTANCE_NAME'),
-    'evolution_api_key' => env('EVOLUTION_API_KEY'),
+    'wuzapi_url' => env('WUZAPI_URL'),
+    'wuzapi_token' => env('WUZAPI_TOKEN'),
 
 ];
