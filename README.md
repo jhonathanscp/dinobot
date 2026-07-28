@@ -7,13 +7,12 @@ Este é o repositório do DinoBot, um bot de WhatsApp construído em Laravel e i
 Como a Wuzapi é um projeto de código aberto externo, a pasta dela **não está inclusa** neste repositório por padrão. Para rodar o bot completo com Docker, siga exatamente os passos abaixo:
 
 ### Passo 1: Baixar a Wuzapi e o Dashboard
-Antes de rodar o Docker, você precisa clonar os repositórios originais da Wuzapi e do Wuzapi Dashboard para dentro da pasta raiz do DinoBot.
-No terminal, abra a pasta do DinoBot e rode os comandos:
+Antes de rodar o Docker, você precisa clonar o repositório original da Wuzapi para dentro da pasta raiz do DinoBot.
+No terminal, abra a pasta do DinoBot e rode o comando:
 ```bash
 git clone https://github.com/robertsumi/wuzapi.git
-git clone https://github.com/SEU_USUARIO/wuzapi-dashboard.git
 ```
-Isso criará as pastas `wuzapi/` e `wuzapi-dashboard/` com todos os arquivos necessários. (As duas pastas já estão no `.gitignore` para não conflitarem com seus commits).
+Isso criará as pastas `wuzapi/` com todos os arquivos necessários. (A pasta já está no `.gitignore` para não conflitarem com seus commits).
 
 ### Passo 2: Configurar o `.env`
 Caso ainda não tenha feito, crie o arquivo `.env` na raiz do projeto (use o `.env.example` como base).
@@ -31,10 +30,9 @@ Isso irá construir e rodar:
 - O banco de dados do bot
 - O servidor da **Wuzapi** (Backend de conexão do WhatsApp)
 - O **Bot (Laravel)** que escuta os webhooks e processa os comandos
-- O **Dashboard (React)** para escanear o QR Code de forma visual
 
 ### Passo 4: Escanear o QR Code
-1. Acesse o painel pelo navegador em: `http://localhost`
+1. Acesse o painel pelo navegador em: `http://localhost:8080`
 2. Entre com a senha de acesso (padrão no `.env`: `admin123`)
 3. Escaneie o QR Code usando a função de Dispositivos Conectados no seu WhatsApp.
 

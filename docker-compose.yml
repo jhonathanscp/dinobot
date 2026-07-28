@@ -24,16 +24,3 @@ services:
     restart: always
     volumes:
       - ./bot-app:/var/www/html
-
-  dashboard:
-    build: 
-      context: ./wuzapi-dashboard
-      args:
-        - VITE_WUZAPI_TOKEN=${WUZAPI_TOKEN}
-        - VITE_DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD:-admin}
-    container_name: wuzapi-dashboard
-    ports:
-      - "80:80"
-    depends_on:
-      - wuzapi
-    restart: always
