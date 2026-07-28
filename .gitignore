@@ -5,3 +5,4 @@ node_modules
 /wuzapi_data
 bot-app/laravel
 payload.json
+wuzapi/
