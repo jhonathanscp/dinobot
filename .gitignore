@@ -6,3 +6,4 @@ node_modules
 bot-app/laravel
 payload.json
 wuzapi/
+wuzapi-dashboard/
